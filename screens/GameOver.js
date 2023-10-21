@@ -1,25 +1,56 @@
 import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  Dimensions,
+  useWindowDimensions,
+  ScrollView,
+  Platform,
+} from "react-native";
 import Colors from "../constants/colors";
+import PrimaryButton from "../components/ui/Button";
 
-function GameOver() {
+function GameOver({ roundsNumber, userNumber, onStartNewGame }) {
+  const { width, height } = useWindowDimensions();
+
+  let imageSize = 300;
+  if (width < 380) {
+    imageSize = 150;
+  }
+  if (height < 400) {
+    imageSize = 80;
+  }
+  const imageStyle = {
+    width: imageSize,
+    height: imageSize,
+    borderRadius: imageSize / 2,
+  };
   return (
-    <View style={styles.rootContainer}>
-      <Text style={styles.title}>Game Over</Text>
-      <View style={styles.imageContainer}>
-        <Image
-          style={styles.image}
-          source={require("../assets/images/win.jpg")}
-        />
+    <ScrollView style={{ flex: 1 }}>
+      <View style={styles.rootContainer}>
+        <Text style={styles.title}>Game Over</Text>
+        <View style={[styles.imageContainer, imageStyle]}>
+          <Image
+            style={styles.image}
+            source={require("../assets/images/win.jpg")}
+          />
+        </View>
+        <Text style={styles.summaryText}>
+          Your phone needed <Text style={styles.highlight}>{roundsNumber}</Text>{" "}
+          rounds to guess the number{" "}
+          <Text style={styles.highlight}>{userNumber}</Text>.
+        </Text>
+        <PrimaryButton onPress={onStartNewGame}>Start New Game</PrimaryButton>
       </View>
-      <View>
-        <Text>Your phone needed X rounds to guess the number Y.</Text>
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
 export default GameOver;
+
+const deviceWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
   title: {
@@ -29,13 +60,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     borderColor: "white",
-    borderWidth: 2,
+    // borderWidth: 2,
+    borderWidth: Platform.select({ ios: 0, android: 2 }),
     padding: 12,
   },
   imageContainer: {
     borderRadius: 200,
-    width: 300,
-    height: 300,
+    // width: deviceWidth < 380 ? 150 : 300,
+    // height: deviceWidth < 380 ? 150 : 300,
+    // borderRadius: deviceWidth < 380 ? 75 : 150,
     borderWidth: 3,
     borderColor: Colors.yellow500,
     overflow: "hidden",
@@ -50,5 +83,15 @@ const styles = StyleSheet.create({
     padding: 24,
     justifyContent: "center",
     alignItems: "center",
+  },
+  summaryText: {
+    fontFamily: "open-sans",
+    fontSize: 24,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  highlight: {
+    fontFamily: "open-sans-bold",
+    color: Colors.primary500,
   },
 });
